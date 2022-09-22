@@ -1,4 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../../utils/classes/file_upload.dart';
 
 class CreateBlog extends StatefulWidget {
   const CreateBlog({Key? key}) : super(key: key);
@@ -8,6 +14,36 @@ class CreateBlog extends StatefulWidget {
 }
 
 class _CreateBlogState extends State<CreateBlog> {
+
+  File? image;
+  bool? showFeatureImage = false;
+  Image? featureImage;
+  FileUpload? imageToUpload;
+
+  void _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+
+    XFile? photo = await picker.pickImage(source: ImageSource.camera);
+
+    if (photo != null) {
+
+      image = File(photo.path.toString());
+      List<int> imageBytes = File(photo.path.toString()).readAsBytesSync();
+      String base64Image = base64Encode(imageBytes);
+      imageToUpload = FileUpload();
+      imageToUpload!.path = photo.path.toString();
+      imageToUpload!.type = 'image';
+      imageToUpload!.file = image;
+
+      setState(() {
+        showFeatureImage = !showFeatureImage!;
+        featureImage = Image.memory(base64Decode(base64Image));
+      });
+
+    } else {
+      // User canceled the picker
+    }
+  }
 
 
   @override
@@ -45,7 +81,7 @@ class _CreateBlogState extends State<CreateBlog> {
                   const Text('Body'),
                   TextField(
                     onChanged: (value) {},
-                    maxLines: 10,
+                    maxLines: 15,
                   ),
                 ],
               ),
@@ -63,15 +99,13 @@ class _CreateBlogState extends State<CreateBlog> {
                       color: Colors.green
                     ),
                     margin: const EdgeInsets.only(top: 10.0),
-                    child: Center(
+                    child: !showFeatureImage! ? Center(
                       child: InkWell(
-                        onTap: () {
-
-                          print("Image");
-
-                        },
-                        child: const Icon(Icons.photo_camera),
+                        onTap: _pickImage,
+                        child: const Icon(Icons.photo_camera, color: Colors.white),
                       ),
+                    ) : Center(
+                      child: featureImage,
                     ),
                   )
                 ],

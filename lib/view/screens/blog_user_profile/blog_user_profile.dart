@@ -10,6 +10,24 @@ class BlogUserProfile extends StatefulWidget {
 class _BlogUserProfileState extends State<BlogUserProfile> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Profile'),
+      ),
+      body: Column(
+        children: [
+          Container(
+            height: 140,
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              color: Colors.green
+            ),
+            child: const Text('Profile'),
+          ),
+          Text('Email'),
+          Text('Post created'),
+        ],
+      ),
+    );
   }
 }

@@ -65,6 +65,12 @@ class MyApp extends StatelessWidget {
           return const CreateBlog();
         },
       ),
+      GoRoute(
+        path: '/blog/profile',
+        builder: (BuildContext context, GoRouterState state) {
+          return const BlogUserProfile();
+        },
+      ),
     ],
   );
 }

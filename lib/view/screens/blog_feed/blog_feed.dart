@@ -18,6 +18,13 @@ class _BlogFeedState extends State<BlogFeed> {
 
         appBar: AppBar(
           title: const Text('Feed'),
+          actions: [
+            IconButton(onPressed: () {
+
+              context.go('/blog/profile');
+
+            }, icon: const Icon(Icons.person))
+          ],
         ),
 
         body: ListView(
