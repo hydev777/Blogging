@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -16,7 +17,7 @@ class _LoginState extends State<Login> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Login'),
+          title: const Text('Login', style: TextStyle(color: Colors.black)),
         ),
         body: Center(
           child: Form(
@@ -58,7 +59,7 @@ class _LoginState extends State<Login> {
                           context.go('/feed');
                         }
                       },
-                      child: const Text('Log In'),
+                      child: const Text('Log In', style: TextStyle(color: Colors.black)),
                     ),
                   ),
 

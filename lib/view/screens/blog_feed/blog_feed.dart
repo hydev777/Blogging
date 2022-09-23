@@ -17,13 +17,13 @@ class _BlogFeedState extends State<BlogFeed> {
       child: Scaffold(
 
         appBar: AppBar(
-          title: const Text('Feed'),
+          title: const Text('Feed', style: TextStyle(color: Colors.black)),
           actions: [
             IconButton(onPressed: () {
 
               context.go('/blog/profile');
 
-            }, icon: const Icon(Icons.person))
+            }, icon: const Icon(Icons.person, color: Colors.black,))
           ],
         ),
 

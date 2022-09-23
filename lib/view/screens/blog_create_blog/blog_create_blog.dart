@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../utils/classes/file_upload.dart';
@@ -51,69 +52,87 @@ class _CreateBlogState extends State<CreateBlog> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Create Post'),
+          title: const Text('Create Post', style: TextStyle(color: Colors.black)),
+          leading: IconButton(
+            onPressed: () {
+              context.go('/feed');
+            },
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          ),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
+        body: Container(
+          margin: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
 
-            Container(
-              height: 80,
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
+              Container(
+                height: 80,
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Title'),
+                      Expanded(
+                        child: TextField(
+                          onChanged: (value) {},
+                        ),
+                      )
+                    ],
+                  ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Title'),
-                    Expanded(
-                      child: TextField(
-                        onChanged: (value) {},
+                    const Text('Body'),
+                    TextField(
+                      onChanged: (value) {},
+                      maxLines: 10,
+                    ),
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Feature Image'),
+                    Container(
+                      height: 180,
+                      decoration: const BoxDecoration(
+                        color: Colors.green
+                      ),
+                      margin: const EdgeInsets.only(top: 10.0),
+                      child: !showFeatureImage! ? Center(
+                        child: InkWell(
+                          onTap: _pickImage,
+                          child: const Icon(Icons.photo_camera, color: Colors.white),
+                        ),
+                      ) : Center(
+                        child: featureImage,
                       ),
                     )
                   ],
                 ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Body'),
-                  TextField(
-                    onChanged: (value) {},
-                    maxLines: 15,
-                  ),
-                ],
               ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Feature Image'),
-                  Container(
-                    height: 200,
-                    decoration: const BoxDecoration(
-                      color: Colors.green
-                    ),
-                    margin: const EdgeInsets.only(top: 10.0),
-                    child: !showFeatureImage! ? Center(
-                      child: InkWell(
-                        onTap: _pickImage,
-                        child: const Icon(Icons.photo_camera, color: Colors.white),
-                      ),
-                    ) : Center(
-                      child: featureImage,
-                    ),
-                  )
-                ],
-              ),
-            )
+              Container(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(onPressed: (){}, child: const Text('Create', style: TextStyle(fontSize: 16),))
+                  ],
+                ),
+              )
 
-          ],
+            ],
 
+          ),
         ),
       ),
     );
