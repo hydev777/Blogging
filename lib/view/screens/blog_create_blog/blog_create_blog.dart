@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../../../utils/classes/file_upload.dart';
 
@@ -20,6 +21,10 @@ class _CreateBlogState extends State<CreateBlog> {
   bool? showFeatureImage = false;
   Image? featureImage;
   FileUpload? imageToUpload;
+
+  String? title;
+  String? body;
+  List<String>? categories = [];
 
   void _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -45,7 +50,6 @@ class _CreateBlogState extends State<CreateBlog> {
       // User canceled the picker
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +79,11 @@ class _CreateBlogState extends State<CreateBlog> {
                       const Text('Title'),
                       Expanded(
                         child: TextField(
-                          onChanged: (value) {},
+                          onChanged: (text) {
+
+                            title = text;
+
+                          },
                         ),
                       )
                     ],
@@ -89,7 +97,11 @@ class _CreateBlogState extends State<CreateBlog> {
                   children: [
                     const Text('Body'),
                     TextField(
-                      onChanged: (value) {},
+                      onChanged: (text) {
+
+                        body = text;
+
+                      },
                       maxLines: 10,
                     ),
                   ],
@@ -125,7 +137,17 @@ class _CreateBlogState extends State<CreateBlog> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(onPressed: (){}, child: const Text('Create', style: TextStyle(fontSize: 16),))
+                    TextButton(onPressed: (){
+
+                      final imageStorage = FirebaseStorage.instance;
+
+                      if(title!.isNotEmpty && body!.isNotEmpty) {
+
+
+
+                      }
+
+                    }, child: const Text('Create', style: TextStyle(fontSize: 16, color: Colors.black),))
                   ],
                 ),
               )
