@@ -62,7 +62,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                   padding: const EdgeInsets.all(10),
                   margin: const EdgeInsets.all(10),
                   width: 400,
-                  height: 70,
+                  height: 80,
                   decoration: const BoxDecoration(
 
                   ),
@@ -79,7 +79,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                   padding: const EdgeInsets.all(10),
                   margin: const EdgeInsets.all(10),
                   width: 400,
-                  height: 70,
+                  height: 80,
                   decoration: const BoxDecoration(
 
                   ),
@@ -96,7 +96,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                   padding: const EdgeInsets.all(10),
                   margin: const EdgeInsets.all(10),
                   width: 400,
-                  height: 70,
+                  height: 80,
                   decoration: const BoxDecoration(
 
                   ),

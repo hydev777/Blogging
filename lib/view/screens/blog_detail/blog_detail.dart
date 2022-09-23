@@ -21,7 +21,7 @@ class _BlogDetailState extends State<BlogDetail> {
               floating: false,
               expandedHeight: 160.0,
               flexibleSpace: const FlexibleSpaceBar(
-                title: Text('What is a person?'),
+                title: Text('What is a person?', style: TextStyle(color: Colors.black)),
                 background: FlutterLogo(),
               ),
               leading: IconButton(
@@ -30,10 +30,10 @@ class _BlogDetailState extends State<BlogDetail> {
                   context.go('/feed');
 
                 },
-                icon: Icon(Icons.arrow_back_ios),
+                icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
               ),
             ),
-            SliverToBoxAdapter(
+            const SliverToBoxAdapter(
               child: SizedBox(
                 height: 20,
                 child: Align(

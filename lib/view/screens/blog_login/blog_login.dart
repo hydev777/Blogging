@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -11,6 +13,29 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
+  String? email;
+  String? password;
+
+  Future<UserCredential> _signInWithGoogle() async {
+    // final prefs = await SharedPreferences.getInstance();
+
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // await prefs.setString('accessToken', credential.accessToken!);
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +50,6 @@ class _LoginState extends State<Login> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
                   TextFormField(
                     decoration: const InputDecoration(
                       hintText: 'Enter your email',
@@ -36,36 +60,79 @@ class _LoginState extends State<Login> {
                       }
                       return null;
                     },
-                  ),
-
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your password',
-                    ),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
+                    onChanged: (String text) {
+                      email = text;
                     },
-                    obscuringCharacter: '•',
                   ),
-
+                  TextFormField(
+                      decoration: const InputDecoration(
+                        hintText: 'Enter your password',
+                      ),
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                      onChanged: (String text) {
+                        password = text;
+                      }),
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 2.0),
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_loginFormKey.currentState!.validate()) {
-                          context.go('/feed');
+                          print({email, password});
+
+                          try {
+
+                            print("BEFORE");
+
+                            await FirebaseAuth.instance.signInWithEmailAndPassword(
+                              email: email!,
+                              password: password!,
+                            ).whenComplete(() {
+
+                              GoRouter.of(context).go('/feed');
+
+                            });
+
+                          } on FirebaseAuthException catch (e) {
+                            if (e.code == 'user-not-found') {
+                              print('No user found for that email.');
+                            } else if (e.code == 'wrong-password') {
+                              print('Wrong password provided for that user.');
+                            }
+                            print({ "------------------------------> ", e.code, e.message});
+                            print(e.stackTrace);
+                          } catch (e) {
+                            print(e);
+                          }
                         }
                       },
                       child: const Text('Log In', style: TextStyle(color: Colors.black)),
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2.0),
+                    child: ElevatedButton(
+                      onPressed: () async {
 
+                        await _signInWithGoogle();
+
+                        Future.delayed(const Duration(seconds: 1), () {
+
+                          GoRouter.of(context).go('/feed');
+
+                        });
+
+
+                      },
+                      child: const Text('Google Account', style: TextStyle(color: Colors.black)),
+                    ),
+                  ),
                 ],
-              )
-          ),
+              )),
         ),
       ),
     );
