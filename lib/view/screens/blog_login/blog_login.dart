@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../controller/user_provider/user_provider.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -16,26 +19,64 @@ class _LoginState extends State<Login> {
   String? email;
   String? password;
 
-  Future<UserCredential> _signInWithGoogle() async {
-    // final prefs = await SharedPreferences.getInstance();
+  Future<void> loginUser() async {
 
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    UserProfile userProfile = Provider.of<UserProfile>(context, listen: false);
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    if (_loginFormKey.currentState!.validate()) {
+      print({email, password});
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
+      try {
 
-    // await prefs.setString('accessToken', credential.accessToken!);
+        print("BEFORE");
 
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+        UserCredential user = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: email!,
+          password: password!,
+        );
+
+        Future.delayed( const Duration(seconds: 3), () {
+
+          userProfile.setUser = user.user!;
+          GoRouter.of(context).go('/feed');
+
+        });
+
+      } on FirebaseAuthException catch (e) {
+        if (e.code == 'user-not-found') {
+          print('No user found for that email.');
+        } else if (e.code == 'wrong-password') {
+          print('Wrong password provided for that user.');
+        }
+        print({ "------------------------------> ", e.code, e.message});
+        print(e.stackTrace);
+      } catch (e) {
+        print(e);
+      }
+    }
+
   }
+
+  // Future<UserCredential> _signInWithGoogle() async {
+  //   // final prefs = await SharedPreferences.getInstance();
+  //
+  //   // Trigger the authentication flow
+  //   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+  //
+  //   // Obtain the auth details from the request
+  //   final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+  //
+  //   // Create a new credential
+  //   final credential = GoogleAuthProvider.credential(
+  //     accessToken: googleAuth?.accessToken,
+  //     idToken: googleAuth?.idToken,
+  //   );
+  //
+  //   // await prefs.setString('accessToken', credential.accessToken!);
+  //
+  //   // Once signed in, return the UserCredential
+  //   return await FirebaseAuth.instance.signInWithCredential(credential);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -81,58 +122,31 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.symmetric(vertical: 2.0),
                     child: ElevatedButton(
                       onPressed: () async {
-                        if (_loginFormKey.currentState!.validate()) {
-                          print({email, password});
 
-                          try {
+                        await loginUser();
 
-                            print("BEFORE");
-
-                            await FirebaseAuth.instance.signInWithEmailAndPassword(
-                              email: email!,
-                              password: password!,
-                            );
-
-                            Future.delayed( const Duration(seconds: 3), () {
-
-                              GoRouter.of(context).go('/feed');
-
-                            });
-
-                          } on FirebaseAuthException catch (e) {
-                            if (e.code == 'user-not-found') {
-                              print('No user found for that email.');
-                            } else if (e.code == 'wrong-password') {
-                              print('Wrong password provided for that user.');
-                            }
-                            print({ "------------------------------> ", e.code, e.message});
-                            print(e.stackTrace);
-                          } catch (e) {
-                            print(e);
-                          }
-                        }
                       },
                       child: const Text('Log In', style: TextStyle(color: Colors.black)),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-
-                        await _signInWithGoogle();
-
-                        Future.delayed(const Duration(seconds: 1), () {
-
-                          GoRouter.of(context).go('/feed');
-
-                        });
-
-
-                      },
-                      child: const Text('Google Account', style: TextStyle(color: Colors.black)),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(vertical: 2.0),
+                  //   child: ElevatedButton(
+                  //     onPressed: () async {
+                  //
+                  //       await _signInWithGoogle();
+                  //
+                  //       Future.delayed(const Duration(seconds: 1), () {
+                  //
+                  //         GoRouter.of(context).go('/feed');
+                  //
+                  //       });
+                  //
+                  //
+                  //     },
+                  //     child: const Text('Google Account', style: TextStyle(color: Colors.black)),
+                  //   ),
+                  // ),
                 ],
               )),
         ),

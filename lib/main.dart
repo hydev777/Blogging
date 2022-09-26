@@ -9,7 +9,9 @@ import 'package:go_router/go_router.dart';
 import 'package:blog_solid/view/screens/blog_login/blog_login.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'controller/user_provider/user_provider.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -26,17 +28,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Blog App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSwatch().copyWith(
-
-          primary: Colors.white,
-
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => UserProfile(),
         ),
+      ],
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Blog App',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch().copyWith(
+
+            primary: Colors.white,
+
+          ),
+        ),
+        routerConfig: _router,
       ),
-      routerConfig: _router,
     );
   }
 
@@ -44,8 +53,6 @@ class MyApp extends StatelessWidget {
     initialLocation: '/login',
     redirect: (context, state)  async {
 
-      // final prefs = await SharedPreferences.getInstance();
-      // final String googleAccessToken = prefs.getString('accessToken') ?? '';
       var currentUser = FirebaseAuth.instance.currentUser;
       final bool loggedIn = currentUser != null;
       final bool loggingIn = state.subloc == '/login';

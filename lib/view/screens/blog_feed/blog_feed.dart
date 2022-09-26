@@ -114,6 +114,7 @@ class _BlogFeedState extends State<BlogFeed> {
                                       "title": doc.data()['title'],
                                       "body": doc.data()['body'],
                                       "category": doc.data()['category'],
+                                      "image": doc.data()['image'],
                                     });
                                   });
                                 }
