@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../../controller/blog_provider/blog_provider.dart';
 import '../../../controller/user_provider/user_provider.dart';
 import '../../widgets/blog_item/blog_item.dart';
 
@@ -20,34 +21,11 @@ class _BlogFeedState extends State<BlogFeed> {
   String? categoryDropdownValue;
 
   Future<void> getPosts() async {
-    final db = FirebaseFirestore.instance;
     UserCredential userProfile = Provider.of<UserProfile>(context, listen: false).user;
+    PostsProvider posts2 = Provider.of<PostsProvider>(context, listen: false);
 
-    db.collection("posts").where("owner", isEqualTo: userProfile.user!.uid).snapshots().listen((event) {
-      posts = [];
+    posts2.fillPosts(userProfile.user!.uid);
 
-      for (var change in event.docChanges) {
-        switch (change.type) {
-          case DocumentChangeType.added:
-            setState(() {
-              posts!.add({
-                "id": change.doc.id,
-                "title": change.doc.data()!['title'],
-                "body": change.doc.data()!['body'],
-                "category": change.doc.data()!['category'],
-                "image": change.doc.data()!['image'],
-              });
-            });
-            break;
-          case DocumentChangeType.modified:
-            print("Modified City: ${change.doc.data()}");
-            break;
-          case DocumentChangeType.removed:
-            print("Removed City: ${change.doc.data()}");
-            break;
-        }
-      }
-    });
   }
 
   Future<void> getCategories() async {
@@ -76,7 +54,9 @@ class _BlogFeedState extends State<BlogFeed> {
   @override
   Widget build(BuildContext context) {
 
-    UserCredential userProfile = Provider.of<UserProfile>(context).user;
+    User? user = Provider.of<UserProfile>(context).user.user;
+    List<Map<String, dynamic>> posts2 = Provider.of<PostsProvider>(context).posts;
+    PostsProvider postsActions = Provider.of<PostsProvider>(context, listen: false);
 
     return SafeArea(
       child: Scaffold(
@@ -99,36 +79,39 @@ class _BlogFeedState extends State<BlogFeed> {
                           categoryDropdownValue = value;
                         });
 
-                        final db = FirebaseFirestore.instance;
-                        UserCredential userProfile = Provider.of<UserProfile>(context, listen: false).user;
-                        posts = [];
+                        postsActions.filterPosts(user!.uid, value!);
 
-                        db.collection("posts").where("category", isEqualTo: value).where("owner", isEqualTo: userProfile.user!.uid).get().then(
-                          (doc) async {
-                            if (value != "none") {
-                              doc.docs.forEach((element) {
-                                setState(() {
-                                  posts!.add(element.data());
-                                });
-                              });
-                            } else {
-                              await db.collection("posts").where("owner", isEqualTo: userProfile.user!.uid).get().then((event) {
-                                for (var doc in event.docs) {
-                                  setState(() {
-                                    posts!.add({
-                                      "id": doc.id,
-                                      "title": doc.data()['title'],
-                                      "body": doc.data()['body'],
-                                      "category": doc.data()['category'],
-                                      "image": doc.data()['image'],
-                                    });
-                                  });
-                                }
-                              });
-                            }
-                          },
-                          onError: (e) => print("Error completing: $e"),
-                        );
+                        // final db = FirebaseFirestore.instance;
+                        // UserCredential userProfile = Provider.of<UserProfile>(context, listen: false).user;
+                        // posts = [];
+                        //
+                        // db.collection("posts").where("category", isEqualTo: value).where("owner", isEqualTo: userProfile.user!.uid).get().then(
+                        //   (doc) async {
+                        //     if (value != "none") {
+                        //       doc.docs.forEach((element) {
+                        //         setState(() {
+                        //           posts!.add(element.data());
+                        //         });
+                        //       });
+                        //     } else {
+                        //       await db.collection("posts").where("owner", isEqualTo: userProfile.user!.uid).get().then((event) {
+                        //         for (var doc in event.docs) {
+                        //           setState(() {
+                        //             posts!.add({
+                        //               "id": doc.id,
+                        //               "title": doc.data()['title'],
+                        //               "body": doc.data()['body'],
+                        //               "category": doc.data()['category'],
+                        //               "image": doc.data()['image'],
+                        //             });
+                        //           });
+                        //         }
+                        //       });
+                        //     }
+                        //   },
+                        //   onError: (e) => print("Error completing: $e"),
+                        // );
+
                       },
                       value: categoryDropdownValue,
                       items: categories!.map<DropdownMenuItem<String>>((String value) {
@@ -143,10 +126,10 @@ class _BlogFeedState extends State<BlogFeed> {
               ),
             ),
             Expanded(
-              child: posts!.isNotEmpty
+              child: posts2.isNotEmpty
                   ? ListView(
                       children: [
-                        ...posts!
+                        ...posts2
                             .map(
                               (post) => BlogItem(
                                 id: post['id'],
@@ -171,7 +154,7 @@ class _BlogFeedState extends State<BlogFeed> {
                   color: Colors.white,
                 ),
                 child: Text(
-                  userProfile.user!.email!,
+                  user!.email!,
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 24,
