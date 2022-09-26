@@ -1,7 +1,6 @@
 import 'package:blog_solid/view/screens/blog_create_blog/blog_create_blog.dart';
 import 'package:blog_solid/view/screens/blog_detail/blog_detail.dart';
 import 'package:blog_solid/view/screens/blog_feed/blog_feed.dart';
-import 'package:blog_solid/view/screens/blog_home/blog_home.dart';
 import 'package:blog_solid/view/screens/blog_user_profile/blog_user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -77,12 +76,6 @@ class MyApp extends StatelessWidget {
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return const Login();
-        },
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (BuildContext context, GoRouterState state) {
-          return const BlogHome();
         },
       ),
       GoRoute(
