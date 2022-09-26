@@ -15,7 +15,7 @@ class BlogUserProfile extends StatefulWidget {
 class _BlogUserProfileState extends State<BlogUserProfile> {
   @override
   Widget build(BuildContext context) {
-    User userProfile = Provider.of<UserProfile>(context).user;
+    UserCredential userProfile = Provider.of<UserProfile>(context).user;
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +47,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                         //more than 50% of width makes circle
                         ),
                   ),
-                  Text(userProfile.email!, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  Text(userProfile.user!.email!, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -65,7 +65,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Email', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.email!, style: TextStyle(fontSize: 18)),
+                      Text(userProfile.user!.email!, style: TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),
@@ -79,7 +79,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Email Verified', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.emailVerified.toString(), style: TextStyle(fontSize: 18)),
+                      Text(userProfile.user!.emailVerified.toString(), style: TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),

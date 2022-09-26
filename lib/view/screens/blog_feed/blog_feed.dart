@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import '../../../controller/user_provider/user_provider.dart';
 import '../../widgets/blog_item/blog_item.dart';
 
 class BlogFeed extends StatefulWidget {
@@ -19,8 +21,9 @@ class _BlogFeedState extends State<BlogFeed> {
 
   Future<void> getPosts() async {
     final db = FirebaseFirestore.instance;
+    UserCredential userProfile = Provider.of<UserProfile>(context, listen: false).user;
 
-    db.collection("posts").snapshots().listen((event) {
+    db.collection("posts").where("owner", isEqualTo: userProfile.user!.uid).snapshots().listen((event) {
       posts = [];
 
       for (var change in event.docChanges) {
@@ -72,6 +75,9 @@ class _BlogFeedState extends State<BlogFeed> {
 
   @override
   Widget build(BuildContext context) {
+
+    UserCredential userProfile = Provider.of<UserProfile>(context).user;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -94,9 +100,10 @@ class _BlogFeedState extends State<BlogFeed> {
                         });
 
                         final db = FirebaseFirestore.instance;
+                        UserCredential userProfile = Provider.of<UserProfile>(context, listen: false).user;
                         posts = [];
 
-                        db.collection("posts").where("category", isEqualTo: value).get().then(
+                        db.collection("posts").where("category", isEqualTo: value).where("owner", isEqualTo: userProfile.user!.uid).get().then(
                           (doc) async {
                             if (value != "none") {
                               doc.docs.forEach((element) {
@@ -104,9 +111,8 @@ class _BlogFeedState extends State<BlogFeed> {
                                   posts!.add(element.data());
                                 });
                               });
-                            }
-                            else {
-                              await db.collection("posts").get().then((event) {
+                            } else {
+                              await db.collection("posts").where("owner", isEqualTo: userProfile.user!.uid).get().then((event) {
                                 for (var doc in event.docs) {
                                   setState(() {
                                     posts!.add({
@@ -137,18 +143,22 @@ class _BlogFeedState extends State<BlogFeed> {
               ),
             ),
             Expanded(
-              child: ListView(
-                children: [
-                  ...posts!
-                      .map((post) => BlogItem(
-                            id: post['id'],
-                            title: post['title'],
-                            body: post['body'],
-                            image: post['image'] ?? '',
-                          ))
-                      .toList(),
-                ],
-              ),
+              child: posts!.isNotEmpty
+                  ? ListView(
+                      children: [
+                        ...posts!
+                            .map(
+                              (post) => BlogItem(
+                                id: post['id'],
+                                title: post['title'],
+                                body: post['body'],
+                                image: post['image'] ?? '',
+                              ),
+                            )
+                            .toList(),
+                      ],
+                    )
+                  : const Center(child: Text('No posts to show', )),
             ),
           ],
         ),
@@ -156,13 +166,13 @@ class _BlogFeedState extends State<BlogFeed> {
           child: ListView(
             padding: EdgeInsets.zero,
             children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
+              DrawerHeader(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                 ),
                 child: Text(
-                  'Wilson Toribio',
-                  style: TextStyle(
+                  userProfile.user!.email!,
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 24,
                   ),

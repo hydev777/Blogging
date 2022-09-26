@@ -30,14 +30,15 @@ class _LoginState extends State<Login> {
 
         print("BEFORE");
 
-        UserCredential user = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email!,
           password: password!,
         );
 
-        Future.delayed( const Duration(seconds: 3), () {
+        Future.delayed( const Duration(seconds: 2), () {
 
-          userProfile.setUser = user.user!;
+          print(userCredential);
+          userProfile.setUser = userCredential;
           GoRouter.of(context).go('/feed');
 
         });
@@ -88,66 +89,69 @@ class _LoginState extends State<Login> {
         body: Center(
           child: Form(
               key: _loginFormKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'Enter your email',
-                    ),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                      }
-                      return null;
-                    },
-                    onChanged: (String text) {
-                      email = text;
-                    },
-                  ),
-                  TextFormField(
+              child: Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextFormField(
                       decoration: const InputDecoration(
-                        hintText: 'Enter your password',
+                        hintText: 'Enter your email',
                       ),
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return 'Please enter your email';
                         }
                         return null;
                       },
                       onChanged: (String text) {
-                        password = text;
-                      }),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2.0),
-                    child: ElevatedButton(
-                      onPressed: () async {
-
-                        await loginUser();
-
+                        email = text;
                       },
-                      child: const Text('Log In', style: TextStyle(color: Colors.black)),
                     ),
-                  ),
-                  // Padding(
-                  //   padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  //   child: ElevatedButton(
-                  //     onPressed: () async {
-                  //
-                  //       await _signInWithGoogle();
-                  //
-                  //       Future.delayed(const Duration(seconds: 1), () {
-                  //
-                  //         GoRouter.of(context).go('/feed');
-                  //
-                  //       });
-                  //
-                  //
-                  //     },
-                  //     child: const Text('Google Account', style: TextStyle(color: Colors.black)),
-                  //   ),
-                  // ),
-                ],
+                    TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: 'Enter your password',
+                        ),
+                        validator: (String? value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your password';
+                          }
+                          return null;
+                        },
+                        onChanged: (String text) {
+                          password = text;
+                        }),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      child: ElevatedButton(
+                        onPressed: () async {
+
+                          await loginUser();
+
+                        },
+                        child: const Text('Log In', style: TextStyle(color: Colors.black)),
+                      ),
+                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(vertical: 2.0),
+                    //   child: ElevatedButton(
+                    //     onPressed: () async {
+                    //
+                    //       await _signInWithGoogle();
+                    //
+                    //       Future.delayed(const Duration(seconds: 1), () {
+                    //
+                    //         GoRouter.of(context).go('/feed');
+                    //
+                    //       });
+                    //
+                    //
+                    //     },
+                    //     child: const Text('Google Account', style: TextStyle(color: Colors.black)),
+                    //   ),
+                    // ),
+                  ],
+                ),
               )),
         ),
       ),

@@ -3,15 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class UserProfile with ChangeNotifier {
 
-  User? _user;
+  UserCredential? _user;
 
-  User get user {
+  UserCredential get user {
 
     return _user!;
 
   }
 
-  set setUser(User user) {
+  set setUser(UserCredential user) {
 
     _user = user;
 

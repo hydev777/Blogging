@@ -2,11 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:provider/provider.dart';
 
+import '../../../controller/user_provider/user_provider.dart';
 import '../../../utils/classes/file_upload.dart';
 
 class CreateBlog extends StatefulWidget {
@@ -17,7 +20,6 @@ class CreateBlog extends StatefulWidget {
 }
 
 class _CreateBlogState extends State<CreateBlog> {
-
   File? image;
   String? base64Image;
   bool? showFeatureImage = false;
@@ -38,7 +40,6 @@ class _CreateBlogState extends State<CreateBlog> {
     XFile? photo = await picker.pickImage(source: ImageSource.camera);
 
     if (photo != null) {
-
       image = File(photo.path.toString());
       List<int> imageBytes = File(photo.path.toString()).readAsBytesSync();
       base64Image = base64Encode(imageBytes);
@@ -51,32 +52,25 @@ class _CreateBlogState extends State<CreateBlog> {
         showFeatureImage = !showFeatureImage!;
         featureImage = Image.memory(base64Decode(base64Image!));
       });
-
     } else {
       // User canceled the picker
     }
   }
 
   Future<void> getCategories() async {
-
     final db = FirebaseFirestore.instance;
 
     await db.collection("category").get().then((event) {
       for (var doc in event.docs) {
-
         setState(() {
           categories!.add(doc.data()['name']);
         });
-
       }
     });
 
-    if(categories!.isNotEmpty) {
-
+    if (categories!.isNotEmpty) {
       categoryDropdownValue = categories![0];
-
     }
-
   }
 
   @override
@@ -84,11 +78,12 @@ class _CreateBlogState extends State<CreateBlog> {
     super.initState();
 
     getCategories();
-
   }
 
   @override
   Widget build(BuildContext context) {
+    UserCredential userProfile = Provider.of<UserProfile>(context).user;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -105,28 +100,24 @@ class _CreateBlogState extends State<CreateBlog> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-
               Container(
                 height: 80,
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Title'),
-                      Expanded(
-                        child: TextField(
-                          controller: titleController,
-                          onChanged: (text) {
-
-                            title = text;
-
-                          },
-                        ),
-                      )
-                    ],
-                  ),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Title'),
+                    Expanded(
+                      child: TextField(
+                        controller: titleController,
+                        onChanged: (text) {
+                          title = text;
+                        },
+                      ),
+                    )
+                  ],
+                ),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -136,29 +127,26 @@ class _CreateBlogState extends State<CreateBlog> {
                     TextField(
                       controller: bodyController,
                       onChanged: (text) {
-
                         body = text;
-
                       },
                       maxLines: 10,
                     ),
                   ],
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
                     const Text('Category'),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     DropdownButton(
                       onChanged: (String? value) {
-
                         setState(() {
                           categoryDropdownValue = value;
                         });
-
                       },
                       value: categoryDropdownValue,
                       items: categories!.map<DropdownMenuItem<String>>((String value) {
@@ -171,7 +159,6 @@ class _CreateBlogState extends State<CreateBlog> {
                   ],
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -180,57 +167,60 @@ class _CreateBlogState extends State<CreateBlog> {
                     const Text('Feature Image'),
                     Container(
                       height: 180,
-                      decoration: const BoxDecoration(
-                        color: Colors.green
-                      ),
+                      decoration: const BoxDecoration(color: Colors.green),
                       margin: const EdgeInsets.only(top: 10.0),
-                      child: !showFeatureImage! ? Center(
-                        child: InkWell(
-                          onTap: _pickImage,
-                          child: const Icon(Icons.photo_camera, color: Colors.white),
-                        ),
-                      ) : Center(
-                        child: featureImage,
-                      ),
+                      child: !showFeatureImage!
+                          ? Center(
+                              child: InkWell(
+                                onTap: _pickImage,
+                                child: const Icon(Icons.photo_camera, color: Colors.white),
+                              ),
+                            )
+                          : Center(
+                              child: featureImage,
+                            ),
                     )
                   ],
                 ),
               ),
-
               Container(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    TextButton(onPressed: (){
+                    TextButton(
+                        onPressed: () {
+                          final db = FirebaseFirestore.instance;
 
-                      final db = FirebaseFirestore.instance;
+                          if (title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
+                            final data = {
+                              "title": title,
+                              "body": body,
+                              "category": categoryDropdownValue,
+                              "image": base64Image,
+                              "owner" : userProfile.user!.uid,
+                            };
 
-                      if(title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
+                            db.collection("posts").add(data).then((documentSnapshot) {
+                              print("Added Data with ID: ${documentSnapshot.id}");
 
-                        final data = {"title": title, "body": body, "category": categoryDropdownValue, "image": base64Image};
+                              titleController.clear();
+                              bodyController.clear();
+                              base64Image = "";
 
-                        db.collection("posts").add(data).then((documentSnapshot) {
-
-                          print("Added Data with ID: ${documentSnapshot.id}");
-
-                          setState(() {
-                            titleController.clear();
-                            bodyController.clear();
-                            base64Image = "";
-                            showFeatureImage = false;
-                          });
-
-                        });
-
-                      }
-
-                    }, child: const Text('Create', style: TextStyle(fontSize: 16, color: Colors.black),))
+                              setState(() {
+                                showFeatureImage = false;
+                              });
+                            });
+                          }
+                        },
+                        child: const Text(
+                          'Create',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ))
                   ],
                 ),
               )
-
             ],
-
           ),
         ),
       ),
