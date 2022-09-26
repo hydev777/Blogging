@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +19,7 @@ class CreateBlog extends StatefulWidget {
 class _CreateBlogState extends State<CreateBlog> {
 
   File? image;
+  String? base64Image;
   bool? showFeatureImage = false;
   Image? featureImage;
   FileUpload? imageToUpload;
@@ -25,6 +27,7 @@ class _CreateBlogState extends State<CreateBlog> {
   String? title;
   String? body;
   List<String>? categories = [];
+  String? categoryDropdownValue;
 
   void _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -35,7 +38,7 @@ class _CreateBlogState extends State<CreateBlog> {
 
       image = File(photo.path.toString());
       List<int> imageBytes = File(photo.path.toString()).readAsBytesSync();
-      String base64Image = base64Encode(imageBytes);
+      base64Image = base64Encode(imageBytes);
       imageToUpload = FileUpload();
       imageToUpload!.path = photo.path.toString();
       imageToUpload!.type = 'image';
@@ -43,12 +46,42 @@ class _CreateBlogState extends State<CreateBlog> {
 
       setState(() {
         showFeatureImage = !showFeatureImage!;
-        featureImage = Image.memory(base64Decode(base64Image));
+        featureImage = Image.memory(base64Decode(base64Image!));
       });
 
     } else {
       // User canceled the picker
     }
+  }
+
+  Future<void> getCategories() async {
+
+    final db = FirebaseFirestore.instance;
+
+    await db.collection("category").get().then((event) {
+      for (var doc in event.docs) {
+
+        setState(() {
+          categories!.add(doc.data()['name']);
+        });
+
+      }
+    });
+
+    if(categories!.isNotEmpty) {
+
+      categoryDropdownValue = categories![0];
+
+    }
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    getCategories();
+
   }
 
   @override
@@ -110,6 +143,32 @@ class _CreateBlogState extends State<CreateBlog> {
 
               Padding(
                 padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    const Text('Category'),
+                    SizedBox(width: 10,),
+                    DropdownButton(
+                      onChanged: (String? value) {
+
+                        setState(() {
+                          categoryDropdownValue = value;
+                        });
+
+                      },
+                      value: categoryDropdownValue,
+                      items: categories!.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -139,11 +198,14 @@ class _CreateBlogState extends State<CreateBlog> {
                   children: [
                     TextButton(onPressed: (){
 
-                      final imageStorage = FirebaseStorage.instance;
+                      final db = FirebaseFirestore.instance;
 
-                      if(title!.isNotEmpty && body!.isNotEmpty) {
+                      if( title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
 
+                        final data = {"title": title, "body": body, "category": categoryDropdownValue, "image": base64Image};
 
+                        db.collection("posts").add(data).then((documentSnapshot) =>
+                            print("Added Data with ID: ${documentSnapshot.id}"));
 
                       }
 

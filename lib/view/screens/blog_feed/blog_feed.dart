@@ -15,7 +15,8 @@ class BlogFeed extends StatefulWidget {
 class _BlogFeedState extends State<BlogFeed> {
 
   List<Map<String, dynamic>>? posts = [];
-  final Stream<QuerySnapshot> _postsStream = FirebaseFirestore.instance.collection('users').snapshots();
+  List<String>? categories = ["none"];
+  String? categoryDropdownValue;
 
   Future<void> getPosts() async {
 
@@ -29,7 +30,7 @@ class _BlogFeedState extends State<BlogFeed> {
         switch (change.type) {
           case DocumentChangeType.added:
             setState(() {
-              posts!.add({ "title" : change.doc.data()!['title'], "body": change.doc.data()!['body'] });
+              posts!.add({ "title" : change.doc.data()!['title'], "body": change.doc.data()!['body'], "category":  change.doc.data()!['category']});
             });
             break;
           case DocumentChangeType.modified:
@@ -45,9 +46,32 @@ class _BlogFeedState extends State<BlogFeed> {
 
   }
 
+  Future<void> getCategories() async {
+
+    final db = FirebaseFirestore.instance;
+
+    await db.collection("category").get().then((event) {
+      for (var doc in event.docs) {
+
+        setState(() {
+          categories!.add(doc.data()['name']);
+        });
+
+      }
+    });
+
+    if(categories!.isNotEmpty) {
+
+      categoryDropdownValue = categories![0];
+
+    }
+
+  }
+
   @override
   void initState() {
     getPosts();
+    getCategories();
     super.initState();
   }
 
@@ -59,11 +83,78 @@ class _BlogFeedState extends State<BlogFeed> {
           title: const Text('Feed', style: TextStyle(color: Colors.black)),
           iconTheme: const IconThemeData(color: Colors.black),
         ),
-        body: ListView(
+        body: Column(
           children: [
+            Container(
+              padding: const EdgeInsets.all(5),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    const Text('Filter by: '),
+                    DropdownButton(
+                      onChanged: (String? value) {
 
-            ...posts!.map((post) => BlogItem(title: post['title'], body: post['body'],)).toList(),
+                        setState(() {
+                          categoryDropdownValue = value;
+                        });
 
+                        final db = FirebaseFirestore.instance;
+                        posts = [];
+
+                        db.collection("posts").where("category", isEqualTo: value).get().then(
+                              (doc) async {
+
+                                if(value != "none") {
+
+                                  doc.docs.forEach((element) {
+
+                                    setState(() {
+                                      posts!.add(element.data());
+                                    });
+
+                                  });
+
+                                } else {
+
+                                  await db.collection("posts").get().then((event) {
+                                    for (var doc in event.docs) {
+
+                                      setState(() {
+                                        posts!.add({ "title" : doc.data()['title'], "body": doc.data()['body'], "category":  doc.data()['category']});
+                                      });
+
+                                    }
+                                  });
+
+                                }
+
+                              },
+                          onError: (e) => print("Error completing: $e"),
+                        );
+
+                      },
+                      value: categoryDropdownValue,
+                      items: categories!.map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+
+                  ...posts!.map((post) => BlogItem(title: post['title'], body: post['body'],)).toList(),
+
+                ],
+              ),
+            ),
           ],
         ),
         drawer: Drawer(
