@@ -21,9 +21,7 @@ class BlogItem extends StatelessWidget {
         subtitle: Text(body!.length > 60 ? "${body!.substring(0, 60)}...": body!),
         onTap: () {
 
-          context.go('/blog/1');
           context.goNamed('blog_detail', params: <String, String>{'id': id!});
-          
 
         },
       ),

@@ -75,12 +75,6 @@ class MyApp extends StatelessWidget {
         },
       ),
       GoRoute(
-        path: '/profile',
-        builder: (BuildContext context, GoRouterState state) {
-          return const BlogUserProfile();
-        },
-      ),
-      GoRoute(
         path: '/feed',
         builder: (BuildContext context, GoRouterState state) {
           return const BlogFeed();
@@ -94,13 +88,13 @@ class MyApp extends StatelessWidget {
         },
       ),
       GoRoute(
-        path: '/blog/create',
+        path: '/create',
         builder: (BuildContext context, GoRouterState state) {
           return const CreateBlog();
         },
       ),
       GoRoute(
-        path: '/blog/profile',
+        path: '/profile',
         builder: (BuildContext context, GoRouterState state) {
           return const BlogUserProfile();
         },

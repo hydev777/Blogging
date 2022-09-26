@@ -177,7 +177,7 @@ class _BlogFeedState extends State<BlogFeed> {
                 ),
                 title: const Text('Profile'),
                 onTap: () {
-                  context.go('/blog/profile');
+                  context.go('/profile');
                 },
               ),
               ListTile(
@@ -198,7 +198,8 @@ class _BlogFeedState extends State<BlogFeed> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            context.go('/blog/create');
+            print('CREATE');
+            context.go('/create');
           },
           backgroundColor: Colors.green,
           child: const Icon(Icons.add),
