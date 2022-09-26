@@ -13,24 +13,26 @@ class BlogFeed extends StatefulWidget {
 }
 
 class _BlogFeedState extends State<BlogFeed> {
-
   List<Map<String, dynamic>>? posts = [];
   List<String>? categories = ["none"];
   String? categoryDropdownValue;
 
   Future<void> getPosts() async {
-
     final db = FirebaseFirestore.instance;
 
     db.collection("posts").snapshots().listen((event) {
-
       posts = [];
 
       for (var change in event.docChanges) {
         switch (change.type) {
           case DocumentChangeType.added:
             setState(() {
-              posts!.add({ "title" : change.doc.data()!['title'], "body": change.doc.data()!['body'], "category":  change.doc.data()!['category']});
+              posts!.add({
+                "id": change.doc.id,
+                "title": change.doc.data()!['title'],
+                "body": change.doc.data()!['body'],
+                "category": change.doc.data()!['category'],
+              });
             });
             break;
           case DocumentChangeType.modified:
@@ -41,31 +43,23 @@ class _BlogFeedState extends State<BlogFeed> {
             break;
         }
       }
-
     });
-
   }
 
   Future<void> getCategories() async {
-
     final db = FirebaseFirestore.instance;
 
     await db.collection("category").get().then((event) {
       for (var doc in event.docs) {
-
         setState(() {
           categories!.add(doc.data()['name']);
         });
-
       }
     });
 
-    if(categories!.isNotEmpty) {
-
+    if (categories!.isNotEmpty) {
       categoryDropdownValue = categories![0];
-
     }
-
   }
 
   @override
@@ -94,7 +88,6 @@ class _BlogFeedState extends State<BlogFeed> {
                     const Text('Filter by: '),
                     DropdownButton(
                       onChanged: (String? value) {
-
                         setState(() {
                           categoryDropdownValue = value;
                         });
@@ -103,36 +96,31 @@ class _BlogFeedState extends State<BlogFeed> {
                         posts = [];
 
                         db.collection("posts").where("category", isEqualTo: value).get().then(
-                              (doc) async {
-
-                                if(value != "none") {
-
-                                  doc.docs.forEach((element) {
-
-                                    setState(() {
-                                      posts!.add(element.data());
+                          (doc) async {
+                            if (value != "none") {
+                              doc.docs.forEach((element) {
+                                setState(() {
+                                  posts!.add(element.data());
+                                });
+                              });
+                            }
+                            else {
+                              await db.collection("posts").get().then((event) {
+                                for (var doc in event.docs) {
+                                  setState(() {
+                                    posts!.add({
+                                      "id": doc.id,
+                                      "title": doc.data()['title'],
+                                      "body": doc.data()['body'],
+                                      "category": doc.data()['category'],
                                     });
-
                                   });
-
-                                } else {
-
-                                  await db.collection("posts").get().then((event) {
-                                    for (var doc in event.docs) {
-
-                                      setState(() {
-                                        posts!.add({ "title" : doc.data()['title'], "body": doc.data()['body'], "category":  doc.data()['category']});
-                                      });
-
-                                    }
-                                  });
-
                                 }
-
-                              },
+                              });
+                            }
+                          },
                           onError: (e) => print("Error completing: $e"),
                         );
-
                       },
                       value: categoryDropdownValue,
                       items: categories!.map<DropdownMenuItem<String>>((String value) {
@@ -149,9 +137,13 @@ class _BlogFeedState extends State<BlogFeed> {
             Expanded(
               child: ListView(
                 children: [
-
-                  ...posts!.map((post) => BlogItem(title: post['title'], body: post['body'],)).toList(),
-
+                  ...posts!
+                      .map((post) => BlogItem(
+                            id: post['id'],
+                            title: post['title'],
+                            body: post['body'],
+                          ))
+                      .toList(),
                 ],
               ),
             ),
@@ -177,26 +169,26 @@ class _BlogFeedState extends State<BlogFeed> {
                 color: Colors.black,
               ),
               ListTile(
-                leading: const Icon(Icons.message, color: Colors.black,),
+                leading: const Icon(
+                  Icons.message,
+                  color: Colors.black,
+                ),
                 title: const Text('Profile'),
                 onTap: () {
-
                   context.go('/blog/profile');
-
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.logout_outlined, color: Colors.black,),
+                leading: const Icon(
+                  Icons.logout_outlined,
+                  color: Colors.black,
+                ),
                 title: const Text('Log out'),
                 onTap: () async {
-
                   await FirebaseAuth.instance.signOut();
                   await Future.delayed(Duration.zero, () {
-
                     context.go('/login');
-
                   });
-
                 },
               ),
             ],

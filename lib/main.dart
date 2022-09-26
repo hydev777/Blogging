@@ -87,9 +87,10 @@ class MyApp extends StatelessWidget {
         },
       ),
       GoRoute(
-        path: '/blog/1',
+        name: 'blog_detail',
+        path: '/blog/:id',
         builder: (BuildContext context, GoRouterState state) {
-          return const BlogDetail();
+          return BlogDetail(id: state.params['id'],);
         },
       ),
       GoRoute(

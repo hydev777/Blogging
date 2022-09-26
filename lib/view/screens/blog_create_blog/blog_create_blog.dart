@@ -29,6 +29,9 @@ class _CreateBlogState extends State<CreateBlog> {
   List<String>? categories = [];
   String? categoryDropdownValue;
 
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController bodyController = TextEditingController();
+
   void _pickImage() async {
     final ImagePicker picker = ImagePicker();
 
@@ -112,6 +115,7 @@ class _CreateBlogState extends State<CreateBlog> {
                       const Text('Title'),
                       Expanded(
                         child: TextField(
+                          controller: titleController,
                           onChanged: (text) {
 
                             title = text;
@@ -130,6 +134,7 @@ class _CreateBlogState extends State<CreateBlog> {
                   children: [
                     const Text('Body'),
                     TextField(
+                      controller: bodyController,
                       onChanged: (text) {
 
                         body = text;
@@ -200,12 +205,22 @@ class _CreateBlogState extends State<CreateBlog> {
 
                       final db = FirebaseFirestore.instance;
 
-                      if( title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
+                      if(title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
 
                         final data = {"title": title, "body": body, "category": categoryDropdownValue, "image": base64Image};
 
-                        db.collection("posts").add(data).then((documentSnapshot) =>
-                            print("Added Data with ID: ${documentSnapshot.id}"));
+                        db.collection("posts").add(data).then((documentSnapshot) {
+
+                          print("Added Data with ID: ${documentSnapshot.id}");
+
+                          setState(() {
+                            titleController.clear();
+                            bodyController.clear();
+                            base64Image = "";
+                            showFeatureImage = false;
+                          });
+
+                        });
 
                       }
 
