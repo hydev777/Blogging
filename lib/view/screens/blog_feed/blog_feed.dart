@@ -32,6 +32,7 @@ class _BlogFeedState extends State<BlogFeed> {
                 "title": change.doc.data()!['title'],
                 "body": change.doc.data()!['body'],
                 "category": change.doc.data()!['category'],
+                "image": change.doc.data()!['image'],
               });
             });
             break;
@@ -142,6 +143,7 @@ class _BlogFeedState extends State<BlogFeed> {
                             id: post['id'],
                             title: post['title'],
                             body: post['body'],
+                            image: post['image'] ?? '',
                           ))
                       .toList(),
                 ],

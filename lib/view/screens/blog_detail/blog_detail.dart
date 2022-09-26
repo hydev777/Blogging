@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +26,12 @@ class _BlogDetailState extends State<BlogDetail> {
         final data = doc.data() as Map<String, dynamic>;
 
         setState(() {
-          postsDetails = {"title": data['title'], "body": data["body"], "category": data["category"]};
+          postsDetails = {
+            "title": data['title'],
+            "body": data["body"],
+            "category": data["category"],
+            "image": data["image"],
+          };
         });
 
         print(postsDetails["title"]);
@@ -51,10 +58,10 @@ class _BlogDetailState extends State<BlogDetail> {
               pinned: true,
               snap: false,
               floating: false,
-              expandedHeight: 160.0,
+              expandedHeight: 200.0,
               flexibleSpace: FlexibleSpaceBar(
                 title: Text(postsDetails["title"] ?? "-", style: const TextStyle(color: Colors.black)),
-                background: const FlutterLogo(),
+                background: postsDetails["image"] != null ? Image.memory(base64Decode(postsDetails["image"]!), fit: BoxFit.cover, alignment: Alignment.center,) : const FlutterLogo()
               ),
               leading: IconButton(
                 onPressed: () {
@@ -74,12 +81,9 @@ class _BlogDetailState extends State<BlogDetail> {
             SliverPadding(
               padding: const EdgeInsets.all(10),
               sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return Text(postsDetails["body"] ?? "-");
-                  },
-                  childCount: 1
-                ),
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  return Text(postsDetails["body"] ?? "-");
+                }, childCount: 1),
               ),
             )
           ],
