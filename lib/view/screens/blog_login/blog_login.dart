@@ -91,7 +91,9 @@ class _LoginState extends State<Login> {
                             await FirebaseAuth.instance.signInWithEmailAndPassword(
                               email: email!,
                               password: password!,
-                            ).whenComplete(() {
+                            );
+
+                            Future.delayed( const Duration(seconds: 3), () {
 
                               GoRouter.of(context).go('/feed');
 
