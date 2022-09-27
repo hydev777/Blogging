@@ -18,6 +18,7 @@ class _LoginState extends State<Login> {
   final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
   String? email;
   String? password;
+  bool loading = false;
 
   Future<void> loginUser() async {
 
@@ -35,13 +36,21 @@ class _LoginState extends State<Login> {
           password: password!,
         );
 
+        setState(() {
+          loading = true;
+        });
+
         Future.delayed( const Duration(seconds: 2), () {
 
-          print(userCredential);
+          setState(() {
+            loading = false;
+          });
+
           userProfile.setUser = userCredential;
           GoRouter.of(context).go('/feed');
 
         });
+
 
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
@@ -123,13 +132,14 @@ class _LoginState extends State<Login> {
                         }),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
-                      child: ElevatedButton(
+                      child: ElevatedButton.icon(
+                        icon: loading ? const CircularProgressIndicator(color: Colors.black) : const Icon(Icons.login_outlined, color: Colors.black),
                         onPressed: () async {
 
                           await loginUser();
 
                         },
-                        child: const Text('Log In', style: TextStyle(color: Colors.black)),
+                        label: const Text('Log In', style: TextStyle(color: Colors.black)),
                       ),
                     ),
                     // Padding(

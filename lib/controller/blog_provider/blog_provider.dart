@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../model/posts.dart';
+
 class PostsProvider with ChangeNotifier {
-  List<Map<String, dynamic>>? _posts = [];
+  List<Post>? _posts = [];
   List<String>? _categories = ["none"];
 
-  List<Map<String, dynamic>> get posts {
+  List<Post>? get posts {
     return _posts!;
   }
 
@@ -21,19 +23,29 @@ class PostsProvider with ChangeNotifier {
       (doc) async {
         if (category != "none") {
           doc.docs.forEach((element) {
-            _posts!.add(element.data());
+            _posts!.add(
+              Post(
+                id: element.id,
+                title: element.data()['title'],
+                body: element.data()['body'],
+                category: element.data()['category'],
+                image: element.data()['image'],
+              ),
+            );
           });
           notifyListeners();
         } else {
           await db.collection("posts").where("owner", isEqualTo: userId).get().then((event) {
             for (var doc in event.docs) {
-              _posts!.add({
-                "id": doc.id,
-                "title": doc.data()['title'],
-                "body": doc.data()['body'],
-                "category": doc.data()['category'],
-                "image": doc.data()['image'],
-              });
+              _posts!.add(
+                Post(
+                  id: doc.id,
+                  title: doc.data()['title'],
+                  body: doc.data()['body'],
+                  category: doc.data()['category'],
+                  image: doc.data()['image'],
+                ),
+              );
               notifyListeners();
             }
           });
@@ -52,13 +64,15 @@ class PostsProvider with ChangeNotifier {
       for (var change in event.docChanges) {
         switch (change.type) {
           case DocumentChangeType.added:
-              _posts!.add({
-                "id": change.doc.id,
-                "title": change.doc.data()!['title'],
-                "body": change.doc.data()!['body'],
-                "category": change.doc.data()!['category'],
-                "image": change.doc.data()!['image'],
-              });
+            _posts!.add(
+              Post(
+                id: change.doc.id,
+                title: change.doc.data()!['title'],
+                body: change.doc.data()!['body'],
+                category: change.doc.data()!['category'],
+                image: change.doc.data()!['image'],
+              ),
+            );
             break;
           case DocumentChangeType.modified:
             print("Modified City: ${change.doc.data()}");

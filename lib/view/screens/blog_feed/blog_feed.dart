@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../controller/blog_provider/blog_provider.dart';
 import '../../../controller/user_provider/user_provider.dart';
+import '../../../model/posts.dart';
 import '../../widgets/blog_item/blog_item.dart';
 
 class BlogFeed extends StatefulWidget {
@@ -16,17 +17,8 @@ class BlogFeed extends StatefulWidget {
 }
 
 class _BlogFeedState extends State<BlogFeed> {
-  List<Map<String, dynamic>>? posts = [];
   List<String>? categories = ["none"];
   String? categoryDropdownValue;
-
-  Future<void> getPosts() async {
-    UserCredential userProfile = Provider.of<UserProfile>(context, listen: false).user;
-    PostsProvider posts2 = Provider.of<PostsProvider>(context, listen: false);
-
-    posts2.fillPosts(userProfile.user!.uid);
-
-  }
 
   Future<void> getCategories() async {
     final db = FirebaseFirestore.instance;
@@ -46,7 +38,6 @@ class _BlogFeedState extends State<BlogFeed> {
 
   @override
   void initState() {
-    getPosts();
     getCategories();
     super.initState();
   }
@@ -55,7 +46,7 @@ class _BlogFeedState extends State<BlogFeed> {
   Widget build(BuildContext context) {
 
     User? user = Provider.of<UserProfile>(context).user.user;
-    List<Map<String, dynamic>> posts2 = Provider.of<PostsProvider>(context).posts;
+    List<Post>? posts2 = Provider.of<PostsProvider>(context).posts;
     PostsProvider postsActions = Provider.of<PostsProvider>(context, listen: false);
 
     return SafeArea(
@@ -81,36 +72,6 @@ class _BlogFeedState extends State<BlogFeed> {
 
                         postsActions.filterPosts(user!.uid, value!);
 
-                        // final db = FirebaseFirestore.instance;
-                        // UserCredential userProfile = Provider.of<UserProfile>(context, listen: false).user;
-                        // posts = [];
-                        //
-                        // db.collection("posts").where("category", isEqualTo: value).where("owner", isEqualTo: userProfile.user!.uid).get().then(
-                        //   (doc) async {
-                        //     if (value != "none") {
-                        //       doc.docs.forEach((element) {
-                        //         setState(() {
-                        //           posts!.add(element.data());
-                        //         });
-                        //       });
-                        //     } else {
-                        //       await db.collection("posts").where("owner", isEqualTo: userProfile.user!.uid).get().then((event) {
-                        //         for (var doc in event.docs) {
-                        //           setState(() {
-                        //             posts!.add({
-                        //               "id": doc.id,
-                        //               "title": doc.data()['title'],
-                        //               "body": doc.data()['body'],
-                        //               "category": doc.data()['category'],
-                        //               "image": doc.data()['image'],
-                        //             });
-                        //           });
-                        //         }
-                        //       });
-                        //     }
-                        //   },
-                        //   onError: (e) => print("Error completing: $e"),
-                        // );
 
                       },
                       value: categoryDropdownValue,
@@ -126,16 +87,16 @@ class _BlogFeedState extends State<BlogFeed> {
               ),
             ),
             Expanded(
-              child: posts2.isNotEmpty
+              child: posts2!.isNotEmpty
                   ? ListView(
                       children: [
                         ...posts2
                             .map(
                               (post) => BlogItem(
-                                id: post['id'],
-                                title: post['title'],
-                                body: post['body'],
-                                image: post['image'] ?? '',
+                                id: post.id,
+                                title: post.title,
+                                body: post.body,
+                                image: post.image ?? '',
                               ),
                             )
                             .toList(),
