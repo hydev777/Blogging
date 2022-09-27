@@ -33,7 +33,8 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
           Container(
             height: 220,
             width: double.infinity,
-            decoration: const BoxDecoration(border: Border(bottom: BorderSide(width: 2))),
+            decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(width: 2))),
             margin: const EdgeInsets.only(bottom: 10, left: 20, right: 20),
             child: Center(
               child: Column(
@@ -43,11 +44,15 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                     height: 120,
                     width: 120,
                     margin: const EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(100)
+                    decoration: BoxDecoration(
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.circular(100)
                         //more than 50% of width makes circle
                         ),
                   ),
-                  Text(userProfile.user!.email!, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  Text(userProfile.user!.email!,
+                      style: const TextStyle(
+                          fontSize: 28, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -64,8 +69,11 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Email', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.user!.email!, style: const TextStyle(fontSize: 18)),
+                      const Text('Email',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(userProfile.user!.email!,
+                          style: const TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),
@@ -78,8 +86,11 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Email Verified', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.user!.emailVerified.toString(), style: const TextStyle(fontSize: 18)),
+                      const Text('Email Verified',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(userProfile.user!.emailVerified.toString(),
+                          style: const TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),

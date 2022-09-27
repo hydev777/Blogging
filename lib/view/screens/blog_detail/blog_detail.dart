@@ -1,8 +1,12 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+import '../../../controller/user_provider/user_provider.dart';
 
 class BlogDetail extends StatefulWidget {
   const BlogDetail({Key? key, this.id}) : super(key: key);
@@ -50,6 +54,8 @@ class _BlogDetailState extends State<BlogDetail> {
 
   @override
   Widget build(BuildContext context) {
+    UserCredential userProfile = Provider.of<UserProfile>(context).user;
+
     return SafeArea(
       child: Scaffold(
         body: CustomScrollView(
@@ -60,9 +66,15 @@ class _BlogDetailState extends State<BlogDetail> {
               floating: false,
               expandedHeight: 200.0,
               flexibleSpace: FlexibleSpaceBar(
-                title: Text(postsDetails["title"] ?? "-", style: const TextStyle(color: Colors.black)),
-                background: postsDetails["image"] != null ? Image.memory(base64Decode(postsDetails["image"]!), fit: BoxFit.cover, alignment: Alignment.center,) : const FlutterLogo()
-              ),
+                  title: Text(postsDetails["title"] ?? "-",
+                      style: const TextStyle(color: Colors.black)),
+                  background: postsDetails["image"] != null
+                      ? Image.memory(
+                          base64Decode(postsDetails["image"]!),
+                          fit: BoxFit.cover,
+                          alignment: Alignment.center,
+                        )
+                      : const FlutterLogo()),
               leading: IconButton(
                 onPressed: () {
                   context.go('/feed');
@@ -70,14 +82,17 @@ class _BlogDetailState extends State<BlogDetail> {
                 icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
               ),
             ),
-            // const SliverToBoxAdapter(
-            //   child: SizedBox(
-            //     height: 20,
-            //     child: Align(
-            //         alignment: AlignmentDirectional.centerStart,
-            //         child: Text('Wilson Toribio')),
-            //   ),
-            // ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 20,
+                child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Text(
+                      'by: ${userProfile.user!.email}',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    )),
+              ),
+            ),
             SliverPadding(
               padding: const EdgeInsets.all(10),
               sliver: SliverList(

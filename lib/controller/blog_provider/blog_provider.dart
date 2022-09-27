@@ -17,16 +17,19 @@ class PostsProvider with ChangeNotifier {
   }
 
   bool get postEmpty {
-
     return _postsEmpty;
-
   }
 
   Future<void> filterPosts(String userId, String category) async {
     final db = FirebaseFirestore.instance;
     _posts = [];
 
-    db.collection("posts").where("category", isEqualTo: category).where("owner", isEqualTo: userId).get().then(
+    db
+        .collection("posts")
+        .where("category", isEqualTo: category)
+        .where("owner", isEqualTo: userId)
+        .get()
+        .then(
       (doc) async {
         if (category != "none") {
           doc.docs.forEach((element) {
@@ -40,9 +43,18 @@ class PostsProvider with ChangeNotifier {
               ),
             );
           });
+
+          if (_posts!.isEmpty) {
+            _postsEmpty = true;
+          }
+
           notifyListeners();
         } else {
-          await db.collection("posts").where("owner", isEqualTo: userId).get().then((event) {
+          await db
+              .collection("posts")
+              .where("owner", isEqualTo: userId)
+              .get()
+              .then((event) {
             for (var doc in event.docs) {
               _posts!.add(
                 Post(
@@ -53,8 +65,13 @@ class PostsProvider with ChangeNotifier {
                   image: doc.data()['image'],
                 ),
               );
-              notifyListeners();
             }
+
+            if (_posts!.isEmpty) {
+              _postsEmpty = true;
+            }
+
+            notifyListeners();
           });
         }
       },
@@ -65,7 +82,11 @@ class PostsProvider with ChangeNotifier {
   void fillPosts(String userId) {
     final db = FirebaseFirestore.instance;
 
-    db.collection("posts").where("owner", isEqualTo: userId).snapshots().listen((event) {
+    db
+        .collection("posts")
+        .where("owner", isEqualTo: userId)
+        .snapshots()
+        .listen((event) {
       _posts = [];
 
       for (var change in event.docChanges) {
@@ -90,14 +111,11 @@ class PostsProvider with ChangeNotifier {
         }
       }
 
-      if(_posts!.isEmpty) {
-
+      if (_posts!.isEmpty) {
         _postsEmpty = true;
-
       }
 
       notifyListeners();
     });
   }
-
 }

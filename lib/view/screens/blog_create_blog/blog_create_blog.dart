@@ -75,7 +75,6 @@ class _CreateBlogState extends State<CreateBlog> {
   @override
   void initState() {
     super.initState();
-
     getCategories();
   }
 
@@ -86,7 +85,8 @@ class _CreateBlogState extends State<CreateBlog> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Create Post', style: TextStyle(color: Colors.black)),
+          title:
+              const Text('Create Post', style: TextStyle(color: Colors.black)),
           leading: IconButton(
             onPressed: () {
               context.go('/feed');
@@ -149,7 +149,8 @@ class _CreateBlogState extends State<CreateBlog> {
                           });
                         },
                         value: categoryDropdownValue,
-                        items: categories!.map<DropdownMenuItem<String>>((String value) {
+                        items: categories!
+                            .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -173,7 +174,8 @@ class _CreateBlogState extends State<CreateBlog> {
                             ? Center(
                                 child: InkWell(
                                   onTap: _pickImage,
-                                  child: const Icon(Icons.photo_camera, color: Colors.white),
+                                  child: const Icon(Icons.photo_camera,
+                                      color: Colors.white),
                                 ),
                               )
                             : Center(
@@ -191,17 +193,24 @@ class _CreateBlogState extends State<CreateBlog> {
                           onPressed: () {
                             final db = FirebaseFirestore.instance;
 
-                            if (title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
+                            if (title!.isNotEmpty &&
+                                body!.isNotEmpty &&
+                                categoryDropdownValue!.isNotEmpty &&
+                                base64Image!.isNotEmpty) {
                               final data = {
                                 "title": title,
                                 "body": body,
                                 "category": categoryDropdownValue,
                                 "image": base64Image,
-                                "owner" : userProfile.user!.uid,
+                                "owner": userProfile.user!.uid,
                               };
 
-                              db.collection("posts").add(data).then((documentSnapshot) {
-                                print("Added Data with ID: ${documentSnapshot.id}");
+                              db
+                                  .collection("posts")
+                                  .add(data)
+                                  .then((documentSnapshot) {
+                                print(
+                                    "Added Data with ID: ${documentSnapshot.id}");
 
                                 titleController.clear();
                                 bodyController.clear();
@@ -211,6 +220,15 @@ class _CreateBlogState extends State<CreateBlog> {
                                   showFeatureImage = false;
                                 });
                               });
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Post created!'),
+                                  duration: Duration(milliseconds: 1500),
+                                  width: 280.0,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
                             }
                           },
                           child: const Text(

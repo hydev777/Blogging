@@ -52,7 +52,8 @@ class _BlogFeedState extends State<BlogFeed> {
   Widget build(BuildContext context) {
     User? user = Provider.of<UserProfile>(context).user.user;
     List<Post>? posts = Provider.of<PostsProvider>(context).posts;
-    PostsProvider postsActions = Provider.of<PostsProvider>(context, listen: false);
+    PostsProvider postsActions =
+        Provider.of<PostsProvider>(context, listen: false);
     bool postEmpty = Provider.of<PostsProvider>(context).postEmpty;
 
     return SafeArea(
@@ -79,7 +80,8 @@ class _BlogFeedState extends State<BlogFeed> {
                         postsActions.filterPosts(user!.uid, value!);
                       },
                       value: categoryDropdownValue,
-                      items: categories!.map<DropdownMenuItem<String>>((String value) {
+                      items: categories!
+                          .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),

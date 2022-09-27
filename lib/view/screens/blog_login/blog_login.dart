@@ -20,17 +20,16 @@ class _LoginState extends State<Login> {
   bool loading = false;
 
   Future<void> loginUser() async {
-
     UserProfile userProfile = Provider.of<UserProfile>(context, listen: false);
 
     if (_loginFormKey.currentState!.validate()) {
       print({email, password});
 
       try {
-
         print("BEFORE");
 
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email!,
           password: password!,
         );
@@ -39,31 +38,26 @@ class _LoginState extends State<Login> {
           loading = true;
         });
 
-        Future.delayed( const Duration(seconds: 2), () {
-
+        Future.delayed(const Duration(seconds: 2), () {
           setState(() {
             loading = false;
           });
 
           userProfile.setUser = userCredential;
           GoRouter.of(context).go('/feed');
-
         });
-
-
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
           print('No user found for that email.');
         } else if (e.code == 'wrong-password') {
           print('Wrong password provided for that user.');
         }
-        print({ "------------------------------> ", e.code, e.message});
+        print({"------------------------------> ", e.code, e.message});
         print(e.stackTrace);
       } catch (e) {
         print(e);
       }
     }
-
   }
 
   // Future<UserCredential> _signInWithGoogle() async {
@@ -120,6 +114,9 @@ class _LoginState extends State<Login> {
                         decoration: const InputDecoration(
                           hintText: 'Enter your password',
                         ),
+                        obscureText: true,
+                        enableSuggestions: false,
+                        autocorrect: false,
                         validator: (String? value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your password';
@@ -132,13 +129,20 @@ class _LoginState extends State<Login> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
                       child: ElevatedButton.icon(
-                        icon: loading ? const CircularProgressIndicator(color: Colors.black) : const Icon(Icons.login_outlined, color: Colors.black),
+                        icon: loading
+                            ? const CircularProgressIndicator(
+                                color: Colors.white)
+                            : const Icon(Icons.login_outlined,
+                                color: Colors.white),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Colors.green //elevated btton background color
+                            ),
                         onPressed: () async {
-
                           await loginUser();
-
                         },
-                        label: const Text('Log In', style: TextStyle(color: Colors.black)),
+                        label: const Text('Log In',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
                     // Padding(

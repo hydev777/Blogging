@@ -41,9 +41,7 @@ class MyApp extends StatelessWidget {
         title: 'Blog App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSwatch().copyWith(
-
             primary: Colors.white,
-
           ),
         ),
         routerConfig: _router,
@@ -53,8 +51,7 @@ class MyApp extends StatelessWidget {
 
   final GoRouter _router = GoRouter(
     initialLocation: '/login',
-    redirect: (context, state)  async {
-
+    redirect: (context, state) async {
       var currentUser = FirebaseAuth.instance.currentUser;
       final bool loggedIn = currentUser != null;
       final bool loggingIn = state.subloc == '/login';
@@ -68,7 +65,6 @@ class MyApp extends StatelessWidget {
       }
 
       return null;
-
     },
     routes: <GoRoute>[
       GoRoute(
@@ -87,7 +83,9 @@ class MyApp extends StatelessWidget {
         name: 'blog_detail',
         path: '/blog/:id',
         builder: (BuildContext context, GoRouterState state) {
-          return BlogDetail(id: state.params['id'],);
+          return BlogDetail(
+            id: state.params['id'],
+          );
         },
       ),
       GoRoute(
