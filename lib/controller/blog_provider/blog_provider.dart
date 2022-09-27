@@ -7,6 +7,12 @@ class PostsProvider with ChangeNotifier {
   List<Post>? _posts = [];
   List<String>? _categories = ["none"];
   bool _postsEmpty = false;
+  Post? _postDetail =
+      Post(id: '', title: '', body: '', category: '', image: '');
+
+  Post? get postDetail {
+    return _postDetail;
+  }
 
   List<Post>? get posts {
     return _posts!;
@@ -18,6 +24,34 @@ class PostsProvider with ChangeNotifier {
 
   bool get postEmpty {
     return _postsEmpty;
+  }
+
+  getDetails(String postId) {
+    print({'GET DETAILS', postId});
+    final db = FirebaseFirestore.instance;
+
+    print('GET DETAILS 2');
+
+    final docRef = db.collection("posts").doc(postId);
+
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        final data = doc.data() as Map<String, dynamic>;
+
+        _postDetail = Post(
+          id: doc.id,
+          title: data['title'],
+          body: data["body"],
+          category: data["category"],
+          image: data["image"],
+        );
+
+        print('DETAIL GET');
+        notifyListeners();
+        // ...
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
   }
 
   Future<void> filterPosts(String userId, String category) async {

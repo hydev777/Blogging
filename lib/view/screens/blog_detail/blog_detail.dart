@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:blog_solid/controller/blog_provider/blog_provider.dart';
+import 'package:blog_solid/model/posts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,30 +22,9 @@ class BlogDetail extends StatefulWidget {
 class _BlogDetailState extends State<BlogDetail> {
   Map<String, dynamic> postsDetails = {};
 
-  getDetails() {
-    final db = FirebaseFirestore.instance;
-
-    final docRef = db.collection("posts").doc(widget.id);
-
-    docRef.get().then(
-      (DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-
-        setState(() {
-          postsDetails = {
-            "title": data['title'],
-            "body": data["body"],
-            "category": data["category"],
-            "image": data["image"],
-          };
-        });
-
-        print(postsDetails["title"]);
-        print(widget.id);
-        // ...
-      },
-      onError: (e) => print("Error getting document: $e"),
-    );
+  void getDetails() {
+    print('INIT');
+    Provider.of<PostsProvider>(context, listen: false).getDetails(widget.id!);
   }
 
   @override
@@ -55,6 +36,7 @@ class _BlogDetailState extends State<BlogDetail> {
   @override
   Widget build(BuildContext context) {
     UserCredential userProfile = Provider.of<UserProfile>(context).user;
+    Post? postDetail = Provider.of<PostsProvider>(context).postDetail;
 
     return SafeArea(
       child: Scaffold(
@@ -66,11 +48,11 @@ class _BlogDetailState extends State<BlogDetail> {
               floating: false,
               expandedHeight: 200.0,
               flexibleSpace: FlexibleSpaceBar(
-                  title: Text(postsDetails["title"] ?? "-",
+                  title: Text(postDetail!.title ?? "-",
                       style: const TextStyle(color: Colors.black)),
-                  background: postsDetails["image"] != null
+                  background: postDetail.image != ''
                       ? Image.memory(
-                          base64Decode(postsDetails["image"]!),
+                          base64Decode(postDetail.image!),
                           fit: BoxFit.cover,
                           alignment: Alignment.center,
                         )
@@ -86,18 +68,19 @@ class _BlogDetailState extends State<BlogDetail> {
               child: SizedBox(
                 height: 20,
                 child: Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: Text(
-                      'by: ${userProfile.user!.email}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    )),
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Text(
+                    'by: ${userProfile.user!.email}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ),
             SliverPadding(
               padding: const EdgeInsets.all(10),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  return Text(postsDetails["body"] ?? "-");
+                  return Text(postDetail.body ?? "-");
                 }, childCount: 1),
               ),
             )
