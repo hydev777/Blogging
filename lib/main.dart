@@ -9,7 +9,6 @@ import 'package:blog_solid/view/screens/blog_login/blog_login.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'controller/blog_provider/blog_provider.dart';
 import 'controller/user_provider/user_provider.dart';
 import 'firebase_options.dart';

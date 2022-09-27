@@ -6,7 +6,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controller/user_provider/user_provider.dart';
@@ -97,130 +96,132 @@ class _CreateBlogState extends State<CreateBlog> {
         ),
         body: Container(
           margin: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                height: 80,
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Title'),
-                    Expanded(
-                      child: TextField(
-                        controller: titleController,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  height: 80,
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Title'),
+                      Expanded(
+                        child: TextField(
+                          controller: titleController,
+                          onChanged: (text) {
+                            title = text;
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Body'),
+                      TextField(
+                        controller: bodyController,
                         onChanged: (text) {
-                          title = text;
+                          body = text;
                         },
+                        maxLines: 10,
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Body'),
-                    TextField(
-                      controller: bodyController,
-                      onChanged: (text) {
-                        body = text;
-                      },
-                      maxLines: 10,
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Text('Category'),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    DropdownButton(
-                      onChanged: (String? value) {
-                        setState(() {
-                          categoryDropdownValue = value;
-                        });
-                      },
-                      value: categoryDropdownValue,
-                      items: categories!.map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Feature Image'),
-                    Container(
-                      height: 180,
-                      decoration: const BoxDecoration(color: Colors.green),
-                      margin: const EdgeInsets.only(top: 10.0),
-                      child: !showFeatureImage!
-                          ? Center(
-                              child: InkWell(
-                                onTap: _pickImage,
-                                child: const Icon(Icons.photo_camera, color: Colors.white),
-                              ),
-                            )
-                          : Center(
-                              child: featureImage,
-                            ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          final db = FirebaseFirestore.instance;
-
-                          if (title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
-                            final data = {
-                              "title": title,
-                              "body": body,
-                              "category": categoryDropdownValue,
-                              "image": base64Image,
-                              "owner" : userProfile.user!.uid,
-                            };
-
-                            db.collection("posts").add(data).then((documentSnapshot) {
-                              print("Added Data with ID: ${documentSnapshot.id}");
-
-                              titleController.clear();
-                              bodyController.clear();
-                              base64Image = "";
-
-                              setState(() {
-                                showFeatureImage = false;
-                              });
-                            });
-                          }
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      const Text('Category'),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      DropdownButton(
+                        onChanged: (String? value) {
+                          setState(() {
+                            categoryDropdownValue = value;
+                          });
                         },
-                        child: const Text(
-                          'Create',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
-                        ))
-                  ],
+                        value: categoryDropdownValue,
+                        items: categories!.map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
                 ),
-              )
-            ],
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Feature Image'),
+                      Container(
+                        height: 180,
+                        decoration: const BoxDecoration(color: Colors.green),
+                        margin: const EdgeInsets.only(top: 10.0),
+                        child: !showFeatureImage!
+                            ? Center(
+                                child: InkWell(
+                                  onTap: _pickImage,
+                                  child: const Icon(Icons.photo_camera, color: Colors.white),
+                                ),
+                              )
+                            : Center(
+                                child: featureImage,
+                              ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            final db = FirebaseFirestore.instance;
+
+                            if (title!.isNotEmpty && body!.isNotEmpty && categoryDropdownValue!.isNotEmpty && base64Image!.isNotEmpty) {
+                              final data = {
+                                "title": title,
+                                "body": body,
+                                "category": categoryDropdownValue,
+                                "image": base64Image,
+                                "owner" : userProfile.user!.uid,
+                              };
+
+                              db.collection("posts").add(data).then((documentSnapshot) {
+                                print("Added Data with ID: ${documentSnapshot.id}");
+
+                                titleController.clear();
+                                bodyController.clear();
+                                base64Image = "";
+
+                                setState(() {
+                                  showFeatureImage = false;
+                                });
+                              });
+                            }
+                          },
+                          child: const Text(
+                            'Create',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ))
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

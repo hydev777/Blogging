@@ -37,10 +37,8 @@ class _BlogFeedState extends State<BlogFeed> {
   }
 
   void loadRecords() {
-
     User? user = Provider.of<UserProfile>(context, listen: false).user.user;
     Provider.of<PostsProvider>(context, listen: false).fillPosts(user!.uid);
-
   }
 
   @override
@@ -52,9 +50,8 @@ class _BlogFeedState extends State<BlogFeed> {
 
   @override
   Widget build(BuildContext context) {
-
     User? user = Provider.of<UserProfile>(context).user.user;
-    List<Post>? posts2 = Provider.of<PostsProvider>(context).posts;
+    List<Post>? posts = Provider.of<PostsProvider>(context).posts;
     PostsProvider postsActions = Provider.of<PostsProvider>(context, listen: false);
     bool postEmpty = Provider.of<PostsProvider>(context).postEmpty;
 
@@ -80,7 +77,6 @@ class _BlogFeedState extends State<BlogFeed> {
                         });
 
                         postsActions.filterPosts(user!.uid, value!);
-
                       },
                       value: categoryDropdownValue,
                       items: categories!.map<DropdownMenuItem<String>>((String value) {
@@ -95,10 +91,10 @@ class _BlogFeedState extends State<BlogFeed> {
               ),
             ),
             Expanded(
-              child: posts2!.isNotEmpty
+              child: posts!.isNotEmpty
                   ? ListView(
                       children: [
-                        ...posts2
+                        ...posts
                             .map(
                               (post) => BlogItem(
                                 id: post.id,
@@ -110,7 +106,17 @@ class _BlogFeedState extends State<BlogFeed> {
                             .toList(),
                       ],
                     )
-                  : postEmpty ? const Center(child: Text('No posts to show', )) : const Center(child: CircularProgressIndicator(color: Colors.black,)),
+                  : postEmpty
+                      ? const Center(
+                          child: Text(
+                            'No posts to show',
+                          ),
+                        )
+                      : const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.black,
+                          ),
+                        ),
             ),
           ],
         ),
@@ -161,7 +167,6 @@ class _BlogFeedState extends State<BlogFeed> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            print('CREATE');
             context.go('/create');
           },
           backgroundColor: Colors.green,

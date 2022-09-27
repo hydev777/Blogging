@@ -65,7 +65,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Email', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.user!.email!, style: TextStyle(fontSize: 18)),
+                      Text(userProfile.user!.email!, style: const TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),
@@ -79,7 +79,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Email Verified', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.user!.emailVerified.toString(), style: TextStyle(fontSize: 18)),
+                      Text(userProfile.user!.emailVerified.toString(), style: const TextStyle(fontSize: 18)),
                     ],
                   ),
                 ),
