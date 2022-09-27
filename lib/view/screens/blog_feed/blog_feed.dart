@@ -36,8 +36,16 @@ class _BlogFeedState extends State<BlogFeed> {
     }
   }
 
+  void loadRecords() {
+
+    User? user = Provider.of<UserProfile>(context, listen: false).user.user;
+    Provider.of<PostsProvider>(context, listen: false).fillPosts(user!.uid);
+
+  }
+
   @override
   void initState() {
+    loadRecords();
     getCategories();
     super.initState();
   }
@@ -48,6 +56,7 @@ class _BlogFeedState extends State<BlogFeed> {
     User? user = Provider.of<UserProfile>(context).user.user;
     List<Post>? posts2 = Provider.of<PostsProvider>(context).posts;
     PostsProvider postsActions = Provider.of<PostsProvider>(context, listen: false);
+    bool postEmpty = Provider.of<PostsProvider>(context).postEmpty;
 
     return SafeArea(
       child: Scaffold(
@@ -71,7 +80,6 @@ class _BlogFeedState extends State<BlogFeed> {
                         });
 
                         postsActions.filterPosts(user!.uid, value!);
-
 
                       },
                       value: categoryDropdownValue,
@@ -102,7 +110,7 @@ class _BlogFeedState extends State<BlogFeed> {
                             .toList(),
                       ],
                     )
-                  : const Center(child: Text('No posts to show', )),
+                  : postEmpty ? const Center(child: Text('No posts to show', )) : const Center(child: CircularProgressIndicator(color: Colors.black,)),
             ),
           ],
         ),

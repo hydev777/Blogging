@@ -6,6 +6,7 @@ import '../../model/posts.dart';
 class PostsProvider with ChangeNotifier {
   List<Post>? _posts = [];
   List<String>? _categories = ["none"];
+  bool _postsEmpty = false;
 
   List<Post>? get posts {
     return _posts!;
@@ -13,6 +14,12 @@ class PostsProvider with ChangeNotifier {
 
   List<String> get categories {
     return _categories!;
+  }
+
+  bool get postEmpty {
+
+    return _postsEmpty;
+
   }
 
   Future<void> filterPosts(String userId, String category) async {
@@ -81,6 +88,12 @@ class PostsProvider with ChangeNotifier {
             print("Removed City: ${change.doc.data()}");
             break;
         }
+      }
+
+      if(_posts!.isEmpty) {
+
+        _postsEmpty = true;
+
       }
 
       notifyListeners();
