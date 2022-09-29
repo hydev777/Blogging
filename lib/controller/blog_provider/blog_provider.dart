@@ -27,10 +27,7 @@ class PostsProvider with ChangeNotifier {
   }
 
   getPostDetails(String postId) {
-    print({'GET DETAILS', postId});
     final db = FirebaseFirestore.instance;
-
-    print('GET DETAILS 2');
 
     final docRef = db.collection("posts").doc(postId);
 
@@ -46,7 +43,6 @@ class PostsProvider with ChangeNotifier {
           image: data["image"],
         );
 
-        print('DETAIL GET');
         notifyListeners();
         // ...
       },

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controller/user_provider/user_provider.dart';
+import '../../widgets/detail_field/detail_field.dart';
 
 class BlogUserProfile extends StatefulWidget {
   const BlogUserProfile({Key? key}) : super(key: key);
@@ -34,7 +35,10 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
             height: 220,
             width: double.infinity,
             decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(width: 2))),
+              border: Border(
+                bottom: BorderSide(width: 2),
+              ),
+            ),
             margin: const EdgeInsets.only(bottom: 10, left: 20, right: 20),
             child: Center(
               child: Column(
@@ -50,9 +54,13 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                         //more than 50% of width makes circle
                         ),
                   ),
-                  Text(userProfile.user!.email!,
-                      style: const TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.bold)),
+                  Text(
+                    userProfile.user!.email!,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -60,39 +68,13 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
           Expanded(
             child: ListView(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.all(10),
-                  width: 400,
-                  height: 80,
-                  decoration: const BoxDecoration(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Email',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.user!.email!,
-                          style: const TextStyle(fontSize: 18)),
-                    ],
-                  ),
+                DetailField(
+                  title: 'Email',
+                  content: userProfile.user!.email,
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.all(10),
-                  width: 400,
-                  height: 80,
-                  decoration: const BoxDecoration(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Email Verified',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
-                      Text(userProfile.user!.emailVerified.toString(),
-                          style: const TextStyle(fontSize: 18)),
-                    ],
-                  ),
+                DetailField(
+                  title: 'Email Verified',
+                  content: userProfile.user!.emailVerified.toString(),
                 ),
               ],
             ),
