@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../controller/user_provider/user_provider.dart';
 
@@ -21,13 +22,10 @@ class _LoginState extends State<Login> {
 
   Future<void> loginUser() async {
     UserProfile userProfile = Provider.of<UserProfile>(context, listen: false);
+    final storage = await SharedPreferences.getInstance();
 
     if (_loginFormKey.currentState!.validate()) {
-      print({email, password});
-
       try {
-        print("BEFORE");
-
         UserCredential userCredential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email!,
@@ -44,6 +42,8 @@ class _LoginState extends State<Login> {
           });
 
           userProfile.setUser = userCredential;
+          storage.setString('userToken', userCredential.user!.uid);
+
           GoRouter.of(context).go('/feed');
         });
       } on FirebaseAuthException catch (e) {

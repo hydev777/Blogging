@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../../controller/blog_provider/blog_provider.dart';
 import '../../../controller/user_provider/user_provider.dart';
-import '../../../model/posts.dart';
+import '../../../model/post.dart';
 import '../../widgets/blog_item/blog_item.dart';
 
 class BlogFeed extends StatefulWidget {

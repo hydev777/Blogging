@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:blog_solid/controller/blog_provider/blog_provider.dart';
-import 'package:blog_solid/model/posts.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:blog_solid/model/post.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -23,8 +22,8 @@ class _BlogDetailState extends State<BlogDetail> {
   Map<String, dynamic> postsDetails = {};
 
   void getDetails() {
-    print('INIT');
-    Provider.of<PostsProvider>(context, listen: false).getDetails(widget.id!);
+    Provider.of<PostsProvider>(context, listen: false)
+        .getPostDetails(widget.id!);
   }
 
   @override

@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../../../controller/user_provider/user_provider.dart';
-import '../../../utils/classes/file_upload.dart';
 
 class CreateBlog extends StatefulWidget {
   const CreateBlog({Key? key}) : super(key: key);
@@ -23,7 +22,6 @@ class _CreateBlogState extends State<CreateBlog> {
   String? base64Image;
   bool? showFeatureImage = false;
   Image? featureImage;
-  FileUpload? imageToUpload;
 
   String? title;
   String? body;
@@ -42,10 +40,6 @@ class _CreateBlogState extends State<CreateBlog> {
       image = File(photo.path.toString());
       List<int> imageBytes = File(photo.path.toString()).readAsBytesSync();
       base64Image = base64Encode(imageBytes);
-      imageToUpload = FileUpload();
-      imageToUpload!.path = photo.path.toString();
-      imageToUpload!.type = 'image';
-      imageToUpload!.file = image;
 
       setState(() {
         showFeatureImage = !showFeatureImage!;

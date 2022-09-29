@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../model/posts.dart';
+import '../../model/post.dart';
 
 class PostsProvider with ChangeNotifier {
   List<Post>? _posts = [];
@@ -26,7 +26,7 @@ class PostsProvider with ChangeNotifier {
     return _postsEmpty;
   }
 
-  getDetails(String postId) {
+  getPostDetails(String postId) {
     print({'GET DETAILS', postId});
     final db = FirebaseFirestore.instance;
 
