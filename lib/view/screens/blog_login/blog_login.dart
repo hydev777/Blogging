@@ -20,6 +20,26 @@ class _LoginState extends State<Login> {
   String? password;
   bool loading = false;
 
+  showMessage(String title, String content) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(title),
+            content: Text(content),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child:
+                    const Text('CLOSE', style: TextStyle(color: Colors.black)),
+              )
+            ],
+          );
+        });
+  }
+
   Future<void> loginUser() async {
     UserProfile userProfile = Provider.of<UserProfile>(context, listen: false);
     final storage = await SharedPreferences.getInstance();
@@ -48,10 +68,13 @@ class _LoginState extends State<Login> {
         });
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found') {
+          showMessage(e.code, e.message!);
           print('No user found for that email.');
         } else if (e.code == 'wrong-password') {
+          showMessage(e.code, e.message!);
           print('Wrong password provided for that user.');
         }
+        showMessage(e.code, e.message!);
         print({"------------------------------> ", e.code, e.message});
         print(e.stackTrace);
       } catch (e) {
@@ -130,8 +153,12 @@ class _LoginState extends State<Login> {
                       padding: const EdgeInsets.symmetric(vertical: 2.0),
                       child: ElevatedButton.icon(
                         icon: loading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white)
+                            ? const SizedBox(
+                                height: 10.0,
+                                width: 10.0,
+                                child: CircularProgressIndicator(
+                                    color: Colors.white),
+                              )
                             : const Icon(Icons.login_outlined,
                                 color: Colors.white),
                         style: ElevatedButton.styleFrom(
