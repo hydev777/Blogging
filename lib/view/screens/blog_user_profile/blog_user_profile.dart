@@ -45,7 +45,7 @@ class _BlogUserProfileState extends State<BlogUserProfile> {
                     width: 120,
                     margin: const EdgeInsets.all(10.0),
                     decoration: BoxDecoration(
-                        color: Colors.amber,
+                        color: Colors.green,
                         borderRadius: BorderRadius.circular(100)
                         //more than 50% of width makes circle
                         ),
