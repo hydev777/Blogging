@@ -52,6 +52,8 @@ class _LoginState extends State<Login> {
           password: password!,
         );
 
+        FocusManager.instance.primaryFocus?.unfocus();
+
         setState(() {
           loading = true;
         });
