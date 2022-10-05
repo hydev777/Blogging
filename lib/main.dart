@@ -6,12 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:blog_solid/view/screens/blog_login/blog_login.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'firebase_options.dart';
 import 'controller/blog_provider/blog_provider.dart';
 import 'controller/user_provider/user_provider.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +44,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSwatch().copyWith(
             primary: Colors.white,
           ),
+          textTheme:
+              GoogleFonts.openSansTextTheme(Theme.of(context).textTheme),
         ),
         routerConfig: _router,
       ),

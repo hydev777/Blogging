@@ -65,6 +65,8 @@ class _LoginState extends State<Login> {
 
           userProfile.setUser = userCredential;
           storage.setString('userToken', userCredential.user!.uid);
+          storage.setString('email', userCredential.user!.email!);
+          storage.setString('password', password!);
 
           GoRouter.of(context).go('/feed');
         });
